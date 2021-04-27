@@ -6,7 +6,11 @@ TOKEN = "1761809933:AAGD4RFzRtecd0gL_RYJ8IVr7soNbVzgZ60"
 bot = telebot.TeleBot(token=TOKEN)
 server = Flask(__name__)
 
-
+def findat(msg):
+    # from a list of texts, it finds the one with the '@' sign
+    for i in msg:
+        if '@' in i:
+            return i
 
 @bot.message_handler(commands=['start']) # welcome message handler
 def send_welcome(message):
@@ -14,19 +18,19 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['help']) # help message handler
 def send_welcome(message):
-    bot.reply_to(message, 'Type in a number and send it to me.I will send you a link which will open WhatsApp')
+    bot.reply_to(message, 'Send me a WhatsApp number staring with "@" and i will send you a link ')
 
-@bot.message_handler(func=lambda msg: msg.text is not None)
-
+@bot.message_handler(func=lambda msg: msg.text is not None and '@' in msg.text)
+# lambda function finds messages with the '@' sign in them
+# in case msg.text doesn't exist, the handler doesn't process it
 def at_converter(message):
     texts = message.text.split()
-    at_text = texts.isnumeric()
-    if at_text: 
-        insta_link = "http://api.whatsapp.com/send?phone={}".format(texts)
-        bot.reply_to(message, insta_link)
-    else:
+    at_text = findat(texts)
+    if at_text == '@': # in case it's just the '@', skip
         pass
-        
+    else:
+        insta_link = "http://api.whatsapp.com/send?phone={}".format(at_text[1:])
+        bot.reply_to(message, insta_link)
 
 @server.route('/' + TOKEN, methods=['POST'])
 def getMessage():
