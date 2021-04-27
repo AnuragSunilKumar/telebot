@@ -1,4 +1,3 @@
-
 import telebot
 from flask import Flask, request
 import os
@@ -20,9 +19,9 @@ def send_welcome(message):
 @bot.message_handler(func=lambda msg: msg.text is not None)
 
 def at_converter(message):
-    texts = int(message.text)
-    
-    if texts == int: 
+    texts = message.text.split()
+    at_text = texts.isnumeric()
+    if at_text: 
         insta_link = "http://api.whatsapp.com/send?phone={}".format(texts)
         bot.reply_to(message, insta_link)
     else:
